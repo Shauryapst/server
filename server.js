@@ -1,11 +1,10 @@
 // server.js
+require('dotenv').config();
 const app = require('./src/app');
 const http = require('http');
 const { Server } = require('socket.io');
+const mongoDBConnection = require('./src/config/db/mongo/mongodb.config');
 const PORT = process.env.PORT || 5000;
-
-
-
 
 const server = http.createServer(app);
 
@@ -18,15 +17,15 @@ const io = new Server(server, {
 const chatSpace = io.of("/chat");
 chatSpace.on('connection', (socket) => {
   console.log(`A user connected to the /chat namespace`);
-  // When a user joins "room1"
+ 
   socket.on('joinroom', (room) => {
-    socket.join(room); // Join the specified room
+    socket.join(room); 
     console.log(`User ${socket.id} joined room: ${room}`);
   });
 
-  // Listen for messages from clients in the /chat namespace
+  
   socket.on('message', (message, room) => {
-    // Broadcast the message to clients in the specified room
+    
     console.log(message,  room, socket.id);
     chatSpace.to(room).emit('message', message);
   });
@@ -38,8 +37,15 @@ chatSpace.on('connection', (socket) => {
 
 
 
+const startServer = async () =>{
+  await mongoDBConnection();
+
+  server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+
+}
+
+startServer();
 
 
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
