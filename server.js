@@ -17,17 +17,23 @@ const io = new Server(server, {
 const chatSpace = io.of("/chat");
 chatSpace.on('connection', (socket) => {
   console.log(`A user connected to the /chat namespace`);
- 
+  
   socket.on('joinroom', (room) => {
     socket.join(room); 
     console.log(`User ${socket.id} joined room: ${room}`);
   });
 
   
-  socket.on('message', (message, room) => {
-    
-    console.log(message,  room, socket.id);
-    chatSpace.to(room).emit('message', message);
+  socket.on('message', (data, room) => {
+    let tt = {
+      message: data.message,
+      senderId: data.userId,
+      senderName: data.username,
+      timestamp: data.timestamp,
+
+    }
+    console.log(tt,  room, socket.id);
+    chatSpace.to(room).emit('message', tt);
   });
 
   socket.on('disconnect', () => {

@@ -3,5 +3,5 @@ const path = '/auth';
 module.exports = (basePath, router) =>{
 
     router.post(basePath + path + `/register`, authController.register);
-    router.post(basePath + path + `/login`)
+    router.post(basePath + path + `/login`, authController.login);
 }
